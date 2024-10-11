@@ -3,56 +3,41 @@ package handlers
 import (
 	"fmt"
 	"kaiquecaires/real-time-leaderboard/cmd/databases"
+	"kaiquecaires/real-time-leaderboard/cmd/models"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
 )
 
-type SignUpBody struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+type SignUpHandler struct {
+	userStore databases.UserStore
 }
 
-func SignUp(c *gin.Context) {
-	var user SignUpBody
+func NewSignUpHandler(userStore databases.UserStore) *SignUpHandler {
+	return &SignUpHandler{
+		userStore: userStore,
+	}
+}
 
-	if err := c.ShouldBind(&user); err != nil {
-		c.String(http.StatusBadRequest, fmt.Sprintf("Error on signup: %v", err))
+func (h *SignUpHandler) Handle(c *gin.Context) {
+	var createUserParams models.CreateUserParams
+
+	if err := c.ShouldBind(&createUserParams); err != nil {
+		c.JSON(http.StatusBadRequest, map[string]string{"error": fmt.Sprintf("Error on signup: %v", err)})
 		return
 	}
 
-	if user.Username == "" || user.Password == "" {
-		c.String(http.StatusBadRequest, "username and password must be provided")
+	if errors := createUserParams.Validate(); len(errors) > 0 {
+		c.JSON(http.StatusBadRequest, errors)
 		return
 	}
 
-	if len(user.Username) < 5 || len(user.Username) > 20 {
-		c.String(http.StatusBadRequest, "username must have between 5 and 20 chars")
-		return
-	}
-
-	if len(user.Password) < 8 || len(user.Password) > 20 {
-		c.String(http.StatusBadRequest, "password must have between 8 and 20 chars")
-		return
-	}
-
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	user, err := h.userStore.InsertUser(createUserParams)
 
 	if err != nil {
-		c.String(http.StatusInternalServerError, fmt.Sprintf("Error on signup: %v", err))
+		c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 		return
 	}
 
-	conn := databases.GetDBInstance()
-
-	query := "INSERT INTO users (username, password) VALUES ($1, $2)"
-	_, err = conn.Exec(query, user.Username, hashedPassword)
-
-	if err != nil {
-		c.String(http.StatusInternalServerError, fmt.Sprintf("error inserting user: %v", err))
-		return
-	}
-
-	c.String(200, "User created!")
+	c.JSON(http.StatusCreated, user)
 }

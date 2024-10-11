@@ -1,6 +1,7 @@
 package main
 
 import (
+	"kaiquecaires/real-time-leaderboard/cmd/databases"
 	"kaiquecaires/real-time-leaderboard/cmd/handlers"
 	"net/http"
 
@@ -12,6 +13,10 @@ func main() {
 	route.GET("/", func(c *gin.Context) {
 		c.IndentedJSON(http.StatusOK, "API IS ON FIRE!")
 	})
-	route.POST("/signup", handlers.SignUp)
+
+	conn := databases.GetPostgresInstance()
+	userStore := databases.NewPostgresUserStore(conn)
+	signUpHandler := handlers.NewSignUpHandler(userStore)
+	route.POST("/signup", signUpHandler.Handle)
 	route.Run("0.0.0.0:8080")
 }

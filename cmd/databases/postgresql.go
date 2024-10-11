@@ -16,7 +16,7 @@ type Database struct {
 var instance *Database
 var once sync.Once
 
-func GetDBInstance() *sql.DB {
+func GetPostgresInstance() *sql.DB {
 	once.Do(func() {
 		instance = &Database{}
 		instance.connect()
@@ -25,7 +25,7 @@ func GetDBInstance() *sql.DB {
 }
 
 func (db *Database) connect() {
-	dsn := "user=admin password=admin dbname=realtime_leaderboard host=realtime_leaderboard_postgres port=5432 sslmode=disable"
+	dsn := "user=admin password=admin dbname=realtime_leaderboard host=localhost port=5432 sslmode=disable"
 	conn, err := sql.Open("postgres", dsn)
 
 	if err != nil {

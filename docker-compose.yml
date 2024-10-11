@@ -1,17 +1,6 @@
 version: '3.9'
 
 services:
-  realtime_leaderboard:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: realtime_leaderboard
-    ports:
-      - "8080:8080"
-    depends_on:
-      - redis
-      - postgres
-
   # Redis service
   redis:
     image: redis:latest
