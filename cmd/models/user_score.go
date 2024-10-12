@@ -2,14 +2,13 @@ package models
 
 import "errors"
 
-type UserScore struct {
-	Id     int `json:"id"`
+type CreateUserScore struct {
 	UserId int `json:"user_id"`
 	GameId int `json:"game_id"`
 	Score  int `json:"score"`
 }
 
-func (p *UserScore) Validate() error {
+func (p *CreateUserScore) Validate() error {
 	if p.Score < 0 {
 		return errors.New("score cannot be smaller than 0")
 	}
@@ -19,4 +18,11 @@ func (p *UserScore) Validate() error {
 	}
 
 	return nil
+}
+
+type UserScore struct {
+	Id     int `json:"id"`
+	UserId int `json:"user_id"`
+	GameId int `json:"game_id"`
+	Score  int `json:"score"`
 }

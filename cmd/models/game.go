@@ -7,7 +7,11 @@ type Game struct {
 	Name string `json:"name"`
 }
 
-func (p *Game) Validate() error {
+type CreateGameParams struct {
+	Name string `json:"name"`
+}
+
+func (p *CreateGameParams) Validate() error {
 	if len(p.Name) < 5 {
 		return errors.New("name must have at least 5 characters")
 	}
