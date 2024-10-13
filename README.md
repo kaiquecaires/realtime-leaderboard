@@ -2,6 +2,17 @@
 Inspired by https://roadmap.sh/projects/realtime-leaderboard-system.
 A real-time leaderboard application written in go.
 
+# How to run?
+First, run the dependencies through docker compose using the command:
+```bash
+docker-compose up -d
+```
+
+Run the go project:
+```bash
+go run cmd/main.go
+```
+
 ## Todo
 - [ ] User authentication
 
