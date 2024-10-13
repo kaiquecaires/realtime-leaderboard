@@ -3,6 +3,7 @@ package main
 import (
 	"kaiquecaires/real-time-leaderboard/cmd/databases"
 	"kaiquecaires/real-time-leaderboard/cmd/handlers"
+	"kaiquecaires/real-time-leaderboard/cmd/messaging"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -22,6 +23,11 @@ func main() {
 	gameStore := databases.NewPostgresGameStore(conn)
 	createGameHandler := handlers.NewGameHandler(gameStore)
 	route.POST("/game", createGameHandler.CreateGameHandler)
+
+	producer := messaging.GetProducer()
+	userScorePublisher := messaging.NewKafkaUserScorePublisher(producer)
+	userScoreHandler := handlers.NewUserScoreHandler(userScorePublisher)
+	route.POST("/user-score", userScoreHandler.HandleSendUserScore)
 
 	route.Run("0.0.0.0:8080")
 }
