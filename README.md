@@ -13,9 +13,21 @@ Run the go project:
 go run cmd/main.go
 ```
 
+## Done
+- [x] User sign up
+- [x] Send User Score Data
+- [x] Postgresql User Score Consumer
+- [x] Create a game
+
 ## Todo
 - [ ] User authentication
+- [ ] Redis User Score Consumer
+- [ ] Route to get leader board
+- [ ] Implement Websocket
+- [ ] Improve the consumer logic by adding consumer groups and multiple workers
+- [ ] Handle with idempotency on user score
+- [ ] Handle with retries
+- [ ] Replace Sarama for Confluent Kafka library
 
 # References
 https://medium.com/@mayilb77/design-a-real-time-leaderboard-system-for-millions-of-users-08b96b4b64ce
-
