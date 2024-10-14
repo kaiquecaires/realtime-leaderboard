@@ -17,6 +17,14 @@ func (p *CreateUserScoreParams) Validate() error {
 		return errors.New("score cannot be grater than 100")
 	}
 
+	if p.UserId == 0 {
+		return errors.New("user_id is required")
+	}
+
+	if p.GameId == 0 {
+		return errors.New("game_id is required")
+	}
+
 	return nil
 }
 
