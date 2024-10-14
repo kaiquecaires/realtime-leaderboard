@@ -29,5 +29,9 @@ func main() {
 	userScoreHandler := handlers.NewUserScoreHandler(userScorePublisher)
 	route.POST("/user-score", userScoreHandler.HandleSendUserScore)
 
+	userScoreStore := databases.NewPostgresUserScoreStore(conn)
+	userScoreConsumer := messaging.NewUserScoreConsumer(userScoreStore)
+	go userScoreConsumer.Consume()
+
 	route.Run("0.0.0.0:8080")
 }
