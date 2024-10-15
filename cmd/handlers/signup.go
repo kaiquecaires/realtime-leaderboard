@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"fmt"
-	"kaiquecaires/real-time-leaderboard/cmd/databases"
+	"kaiquecaires/real-time-leaderboard/cmd/db"
 	"kaiquecaires/real-time-leaderboard/cmd/models"
 	"net/http"
 
@@ -10,10 +10,10 @@ import (
 )
 
 type SignUpHandler struct {
-	userStore databases.UserStore
+	userStore db.UserStore
 }
 
-func NewSignUpHandler(userStore databases.UserStore) *SignUpHandler {
+func NewSignUpHandler(userStore db.UserStore) *SignUpHandler {
 	return &SignUpHandler{
 		userStore: userStore,
 	}

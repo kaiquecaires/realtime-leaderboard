@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"kaiquecaires/real-time-leaderboard/cmd/databases"
+	"kaiquecaires/real-time-leaderboard/cmd/db"
 	"kaiquecaires/real-time-leaderboard/cmd/models"
 	"net/http"
 
@@ -9,10 +9,10 @@ import (
 )
 
 type GameHandler struct {
-	gameStore databases.GameStore
+	gameStore db.GameStore
 }
 
-func NewGameHandler(gameStore databases.GameStore) *GameHandler {
+func NewGameHandler(gameStore db.GameStore) *GameHandler {
 	return &GameHandler{gameStore: gameStore}
 }
 

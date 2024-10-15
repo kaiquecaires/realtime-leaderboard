@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"kaiquecaires/real-time-leaderboard/cmd/auth"
-	"kaiquecaires/real-time-leaderboard/cmd/databases"
+	"kaiquecaires/real-time-leaderboard/cmd/db"
 	"kaiquecaires/real-time-leaderboard/cmd/models"
 	"net/http"
 
@@ -11,10 +11,10 @@ import (
 )
 
 type LoginHandler struct {
-	userStore databases.UserStore
+	userStore db.UserStore
 }
 
-func NewLoginHandler(userStore databases.UserStore) *LoginHandler {
+func NewLoginHandler(userStore db.UserStore) *LoginHandler {
 	return &LoginHandler{userStore: userStore}
 }
 

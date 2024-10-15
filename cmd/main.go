@@ -1,7 +1,7 @@
 package main
 
 import (
-	"kaiquecaires/real-time-leaderboard/cmd/databases"
+	"kaiquecaires/real-time-leaderboard/cmd/db"
 	"kaiquecaires/real-time-leaderboard/cmd/handlers"
 	"kaiquecaires/real-time-leaderboard/cmd/messaging"
 	"net/http"
@@ -15,12 +15,12 @@ func main() {
 		c.IndentedJSON(http.StatusOK, "API IS ON FIRE!")
 	})
 
-	conn := databases.GetPostgresInstance()
-	userStore := databases.NewPostgresUserStore(conn)
+	conn := db.GetPostgresInstance()
+	userStore := db.NewPostgresUserStore(conn)
 	signUpHandler := handlers.NewSignUpHandler(userStore)
 	route.POST("/signup", signUpHandler.Handle)
 
-	gameStore := databases.NewPostgresGameStore(conn)
+	gameStore := db.NewPostgresGameStore(conn)
 	createGameHandler := handlers.NewGameHandler(gameStore)
 	route.POST("/game", createGameHandler.CreateGameHandler)
 
@@ -29,7 +29,7 @@ func main() {
 	userScoreHandler := handlers.NewUserScoreHandler(userScorePublisher)
 	route.POST("/user-score", userScoreHandler.HandleSendUserScore)
 
-	userScoreStore := databases.NewPostgresUserScoreStore(conn)
+	userScoreStore := db.NewPostgresUserScoreStore(conn)
 	leaderboardConsumer := messaging.NewLeaderboardConsumer(userScoreStore)
 	go leaderboardConsumer.Consume("leaderboard_postgres_1", "leaderdoard_postgres")
 

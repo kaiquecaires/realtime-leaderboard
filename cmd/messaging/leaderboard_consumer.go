@@ -3,16 +3,16 @@ package messaging
 import (
 	"encoding/json"
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
-	"kaiquecaires/real-time-leaderboard/cmd/databases"
+	"kaiquecaires/real-time-leaderboard/cmd/db"
 	"kaiquecaires/real-time-leaderboard/cmd/models"
 	"log"
 )
 
 type LeaderboardConsumer struct {
-	userScoreStore databases.UserScoreStore
+	userScoreStore db.UserScoreStore
 }
 
-func NewLeaderboardConsumer(userScoreStore databases.UserScoreStore) *LeaderboardConsumer {
+func NewLeaderboardConsumer(userScoreStore db.UserScoreStore) *LeaderboardConsumer {
 	return &LeaderboardConsumer{userScoreStore: userScoreStore}
 }
 
