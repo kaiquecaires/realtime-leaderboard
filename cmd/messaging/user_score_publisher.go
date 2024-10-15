@@ -3,9 +3,8 @@ package messaging
 import (
 	"encoding/json"
 	"kaiquecaires/real-time-leaderboard/cmd/models"
-	"log"
 
-	"github.com/IBM/sarama"
+	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 )
 
 type UserScorePublisher interface {
@@ -13,10 +12,10 @@ type UserScorePublisher interface {
 }
 
 type KafkaUserScorePublisher struct {
-	producer sarama.SyncProducer
+	producer *kafka.Producer
 }
 
-func NewKafkaUserScorePublisher(producer sarama.SyncProducer) *KafkaUserScorePublisher {
+func NewKafkaUserScorePublisher(producer *kafka.Producer) *KafkaUserScorePublisher {
 	return &KafkaUserScorePublisher{producer: producer}
 }
 
@@ -27,18 +26,13 @@ func (k *KafkaUserScorePublisher) NewScore(params models.CreateUserScoreParams) 
 		return err
 	}
 
-	msg := &sarama.ProducerMessage{
-		Topic: "user_score",
-		Value: sarama.ByteEncoder(messageBytes),
+	topic := "leaderboard"
+
+	m := &kafka.Message{
+		Value:          messageBytes,
+		TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
 	}
 
-	partition, offset, err := k.producer.SendMessage(msg)
-
-	if err != nil {
-		return err
-	}
-
-	log.Printf("Message sent to partition %d with offset %d\n", partition, offset)
-
-	return nil
+	err = k.producer.Produce(m, nil)
+	return err
 }

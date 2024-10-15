@@ -4,17 +4,17 @@ import (
 	"log"
 	"sync"
 
-	"github.com/IBM/sarama"
+	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 )
 
 type KafkaProducer struct {
-	producer sarama.SyncProducer
+	producer *kafka.Producer
 }
 
 var once sync.Once
 var kafkaProducer *KafkaProducer
 
-func GetProducer() sarama.SyncProducer {
+func GetProducer() *kafka.Producer {
 	once.Do(func() {
 		kafkaProducer = &KafkaProducer{}
 		kafkaProducer.connect()
@@ -23,18 +23,18 @@ func GetProducer() sarama.SyncProducer {
 }
 
 func (k *KafkaProducer) connect() {
-	config := sarama.NewConfig()
-	config.Producer.Return.Successes = true
-	config.Producer.Retry.Max = 5
-	config.Producer.RequiredAcks = sarama.WaitForAll // Wait for all replicas to acknowledge
-	config.Producer.Idempotent = true
-	config.Net.MaxOpenRequests = 1
-
-	brokers := []string{"host.docker.internal:9094"} // Your Kafka broker addresses
-	producer, err := sarama.NewSyncProducer(brokers, config)
-	if err != nil {
-		log.Fatalln("Failed to start Sarama producer:", err)
+	configMap := &kafka.ConfigMap{
+		"bootstrap.servers":   "localhost:9094",
+		"delivery.timeout.ms": "0",
+		"acks":                "all",
+		"enable.idempotence":  "true",
 	}
-	log.Println("producer connected!")
-	kafkaProducer.producer = producer
+
+	p, err := kafka.NewProducer(configMap)
+
+	if err != nil {
+		log.Fatalf("error on new producer: %v", err)
+	}
+
+	kafkaProducer.producer = p
 }
