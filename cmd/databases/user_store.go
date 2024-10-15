@@ -9,6 +9,7 @@ import (
 
 type UserStore interface {
 	InsertUser(models.CreateUserParams) (*models.User, error)
+	GetByUsername(string) (*models.User, error)
 }
 
 type PostgresUserStore struct {
@@ -40,5 +41,18 @@ func (s *PostgresUserStore) InsertUser(params models.CreateUserParams) (*models.
 		Id:       userId,
 		Username: params.Username,
 		Password: params.Password,
+	}, err
+}
+
+func (s *PostgresUserStore) GetByUsername(username string) (*models.User, error) {
+	var id int
+	var password string
+
+	query := "SELECT id, password FROM users WHERE username = $1"
+	err := s.conn.QueryRow(query, username).Scan(&id, &password)
+	return &models.User{
+		Id:       id,
+		Username: username,
+		Password: password,
 	}, err
 }
