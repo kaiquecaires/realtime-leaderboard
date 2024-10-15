@@ -28,6 +28,7 @@ go run cmd/main.go
 - [ ] Handle with idempotency on user score
 - [ ] Handle with retries
 - [ ] Replace Sarama for Confluent Kafka library
+- [ ] Draw the System Design
 
 # References
 https://medium.com/@mayilb77/design-a-real-time-leaderboard-system-for-millions-of-users-08b96b4b64ce

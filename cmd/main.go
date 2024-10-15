@@ -30,8 +30,8 @@ func main() {
 	route.POST("/user-score", userScoreHandler.HandleSendUserScore)
 
 	userScoreStore := databases.NewPostgresUserScoreStore(conn)
-	userScoreConsumer := messaging.NewUserScoreConsumer(userScoreStore)
-	go userScoreConsumer.Consume()
+	leaderboardConsumer := messaging.NewLeaderboardConsumer(userScoreStore)
+	go leaderboardConsumer.Consume("leaderboard_postgres_1", "leaderdoard_postgres")
 
 	route.Run("0.0.0.0:8080")
 }
