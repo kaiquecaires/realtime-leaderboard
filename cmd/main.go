@@ -33,5 +33,8 @@ func main() {
 	leaderboardConsumer := messaging.NewLeaderboardConsumer(userScoreStore)
 	go leaderboardConsumer.Consume("leaderboard_postgres_1", "leaderdoard_postgres")
 
+	loginHandler := handlers.NewLoginHandler(userStore)
+	route.POST("/login", loginHandler.Handle)
+
 	route.Run("0.0.0.0:8080")
 }

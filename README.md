@@ -18,17 +18,19 @@ go run cmd/main.go
 - [x] Send User Score Data
 - [x] Postgresql User Score Consumer
 - [x] Create a game
+- [x] Replace Sarama for Confluent Kafka library
+- [x] Login route
 
 ## Todo
-- [ ] User authentication
+- [ ] Middleware for authentication
 - [ ] Redis User Score Consumer
 - [ ] Route to get leader board
 - [ ] Implement Websocket
 - [ ] Improve the consumer logic by adding consumer groups and multiple workers
 - [ ] Handle with idempotency on user score
 - [ ] Handle with retries
-- [ ] Replace Sarama for Confluent Kafka library
 - [ ] Draw the System Design
+- [ ] Improve folders' architecture
 
 # References
 https://medium.com/@mayilb77/design-a-real-time-leaderboard-system-for-millions-of-users-08b96b4b64ce
