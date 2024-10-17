@@ -24,12 +24,13 @@ func main() {
 	createGameHandler := handlers.NewGameHandler(gameStore)
 	route.POST("/game", createGameHandler.CreateGameHandler)
 
+	userScoreStore := db.NewPostgresUserScoreStore(conn)
 	producer := messaging.GetProducer()
 	userScorePublisher := messaging.NewKafkaUserScorePublisher(producer)
-	userScoreHandler := handlers.NewUserScoreHandler(userScorePublisher)
+	userScoreHandler := handlers.NewUserScoreHandler(userScorePublisher, userScoreStore)
 	route.POST("/user-score", userScoreHandler.HandleSendUserScore)
+	route.GET("/leaderboard", userScoreHandler.HandleGetLeaderboard)
 
-	userScoreStore := db.NewPostgresUserScoreStore(conn)
 	leaderboardConsumer := messaging.NewLeaderboardConsumer(userScoreStore)
 	go leaderboardConsumer.Consume("leaderboard_postgres_1", "leaderdoard_postgres")
 
