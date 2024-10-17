@@ -1,6 +1,8 @@
 package models
 
-import "errors"
+import (
+	"errors"
+)
 
 type CreateUserScoreParams struct {
 	UserId int `json:"user_id"`
@@ -33,4 +35,14 @@ type UserScore struct {
 	UserId int `json:"user_id"`
 	GameId int `json:"game_id"`
 	Score  int `json:"score"`
+}
+
+type GetLeaderboardParams struct {
+	Limit  int
+	Offset int
+}
+
+type Leaderboard struct {
+	Username string `json:"user_id:"`
+	Score    int    `json:"score"`
 }
