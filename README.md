@@ -20,17 +20,17 @@ go run cmd/main.go
 - [x] Create a game
 - [x] Replace Sarama for Confluent Kafka library
 - [x] Login route
+- [x] Middleware for authentication
+- [x] Improve the consumer logic by adding consumer groups and multiple workers
+- [x] Route to get leaderboard
 
 ## Todo
-- [ ] Middleware for authentication
-- [ ] Redis User Score Consumer
-- [ ] Route to get leader board
-- [ ] Implement Websocket
-- [ ] Improve the consumer logic by adding consumer groups and multiple workers
 - [ ] Handle with idempotency on user score
-- [ ] Handle with retries
 - [ ] Draw the System Design
-- [ ] Improve folders' architecture
+- [ ] Implement redis as cache
+- [ ] Implement Lazy loading on redis
+- [ ] Handle with retries on save on redis
+
 
 # References
 https://medium.com/@mayilb77/design-a-real-time-leaderboard-system-for-millions-of-users-08b96b4b64ce
