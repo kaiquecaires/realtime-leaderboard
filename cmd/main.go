@@ -1,6 +1,7 @@
 package main
 
 import (
+	"kaiquecaires/real-time-leaderboard/cmd/auth"
 	"kaiquecaires/real-time-leaderboard/cmd/db"
 	"kaiquecaires/real-time-leaderboard/cmd/handlers"
 	"kaiquecaires/real-time-leaderboard/cmd/messaging"
@@ -17,25 +18,26 @@ func main() {
 
 	conn := db.GetPostgresInstance()
 	userStore := db.NewPostgresUserStore(conn)
-	signUpHandler := handlers.NewSignUpHandler(userStore)
-	route.POST("/signup", signUpHandler.Handle)
-
 	gameStore := db.NewPostgresGameStore(conn)
-	createGameHandler := handlers.NewGameHandler(gameStore)
-	route.POST("/game", createGameHandler.CreateGameHandler)
-
 	userScoreStore := db.NewPostgresUserScoreStore(conn)
 	producer := messaging.GetProducer()
 	userScorePublisher := messaging.NewKafkaUserScorePublisher(producer)
+
+	signUpHandler := handlers.NewSignUpHandler(userStore)
+	createGameHandler := handlers.NewGameHandler(gameStore)
+	loginHandler := handlers.NewLoginHandler(userStore)
 	userScoreHandler := handlers.NewUserScoreHandler(userScorePublisher, userScoreStore)
-	route.POST("/user-score", userScoreHandler.HandleSendUserScore)
-	route.GET("/leaderboard", userScoreHandler.HandleGetLeaderboard)
+
+	route.POST("/login", loginHandler.Handle)
+	route.POST("/signup", signUpHandler.Handle)
+
+	authorized := route.Group("/", auth.AuthRequired)
+	authorized.POST("/game", createGameHandler.CreateGameHandler)
+	authorized.POST("/user-score", userScoreHandler.HandleSendUserScore)
+	authorized.GET("/leaderboard", userScoreHandler.HandleGetLeaderboard)
 
 	leaderboardConsumer := messaging.NewLeaderboardConsumer(userScoreStore)
 	go leaderboardConsumer.Consume("leaderboard_postgres_1", "leaderdoard_postgres")
-
-	loginHandler := handlers.NewLoginHandler(userStore)
-	route.POST("/login", loginHandler.Handle)
 
 	route.Run("0.0.0.0:8080")
 }
