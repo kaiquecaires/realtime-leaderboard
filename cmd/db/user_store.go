@@ -10,6 +10,7 @@ import (
 type UserStore interface {
 	InsertUser(models.CreateUserParams) (*models.User, error)
 	GetByUsername(string) (*models.User, error)
+	GetById(int) (*models.User, error)
 }
 
 type PostgresUserStore struct {
@@ -54,5 +55,17 @@ func (s *PostgresUserStore) GetByUsername(username string) (*models.User, error)
 		Id:       id,
 		Username: username,
 		Password: password,
+	}, err
+}
+
+func (s *PostgresUserStore) GetById(id int) (*models.User, error) {
+	var username string
+	var password string
+
+	query := "SELECT username, password FROM users WHERE id = $1"
+	err := s.conn.QueryRow(query, id).Scan(&username, &password)
+	return &models.User{
+		Id:       id,
+		Username: username,
 	}, err
 }
