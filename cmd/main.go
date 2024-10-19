@@ -36,7 +36,8 @@ func main() {
 	authorized.POST("/user-score", userScoreHandler.HandleSendUserScore)
 	authorized.GET("/leaderboard", userScoreHandler.HandleGetLeaderboard)
 
-	leaderboardConsumer := messaging.NewLeaderboardConsumer(userScoreStore)
+	leaderboardCache := db.NewRedisLeaderboardCache(db.GetRedisClient())
+	leaderboardConsumer := messaging.NewLeaderboardConsumer(userScoreStore, leaderboardCache, userStore)
 	go leaderboardConsumer.Consume("leaderboard_postgres_1", "leaderdoard_postgres")
 
 	route.Run("0.0.0.0:8080")
