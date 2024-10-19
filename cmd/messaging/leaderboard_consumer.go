@@ -1,19 +1,23 @@
 package messaging
 
 import (
+	"context"
 	"encoding/json"
-	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"kaiquecaires/real-time-leaderboard/cmd/db"
 	"kaiquecaires/real-time-leaderboard/cmd/models"
 	"log"
+
+	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 )
 
 type LeaderboardConsumer struct {
-	userScoreStore db.UserScoreStore
+	userScoreStore   db.UserScoreStore
+	leaderboardCache db.LeaderboardCache
+	userStore        db.UserStore
 }
 
-func NewLeaderboardConsumer(userScoreStore db.UserScoreStore) *LeaderboardConsumer {
-	return &LeaderboardConsumer{userScoreStore: userScoreStore}
+func NewLeaderboardConsumer(userScoreStore db.UserScoreStore, leaderboardCache db.LeaderboardCache, userStore db.UserStore) *LeaderboardConsumer {
+	return &LeaderboardConsumer{userScoreStore: userScoreStore, leaderboardCache: leaderboardCache, userStore: userStore}
 }
 
 func (c *LeaderboardConsumer) Consume(clientId string, groupId string) {
@@ -53,6 +57,21 @@ func (c *LeaderboardConsumer) Consume(clientId string, groupId string) {
 
 		if err := c.userScoreStore.Insert(createUserScore); err != nil {
 			log.Printf("error inserting on user score: %v\n", err)
+			continue
+		}
+
+		user, err := c.userStore.GetById(createUserScore.UserId)
+
+		if err != nil {
+			log.Printf("error to get user: %v\n", err)
+			continue
+		}
+
+		if err := c.leaderboardCache.Insert(context.Background(), models.Leaderboard{
+			Username: user.Username,
+			Score:    createUserScore.Score,
+		}); err != nil {
+			log.Printf("error inserting on leaderboard cache: %v\n", err)
 		}
 	}
 }
