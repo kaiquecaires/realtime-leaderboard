@@ -31,6 +31,9 @@ go run cmd/main.go
 - [ ] Implement Lazy loading on redis
 - [ ] Handle with retries on save on redis
 
+## Things to study
+- [ ] What is the best practices when saving leaderboard on redis?
+- [ ] What is the best practices when working with kafka?
 
 # References
 https://medium.com/@mayilb77/design-a-real-time-leaderboard-system-for-millions-of-users-08b96b4b64ce
