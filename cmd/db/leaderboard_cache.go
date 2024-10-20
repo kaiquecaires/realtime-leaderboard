@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"kaiquecaires/real-time-leaderboard/cmd/models"
+	"log"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -13,11 +14,12 @@ type LeaderboardCache interface {
 }
 
 type RedisLeaderboardCache struct {
-	client *redis.Client
+	client         *redis.Client
+	userScoreStore UserScoreStore
 }
 
-func NewRedisLeaderboardCache(client *redis.Client) *RedisLeaderboardCache {
-	return &RedisLeaderboardCache{client: client}
+func NewRedisLeaderboardCache(client *redis.Client, userScoreStore UserScoreStore) *RedisLeaderboardCache {
+	return &RedisLeaderboardCache{client: client, userScoreStore: userScoreStore}
 }
 
 func (c *RedisLeaderboardCache) Insert(ctx context.Context, params models.Leaderboard) error {
@@ -47,4 +49,21 @@ func (c *RedisLeaderboardCache) Get(ctx context.Context) ([]models.Leaderboard, 
 	}
 
 	return leaderboard, nil
+}
+
+func (c *RedisLeaderboardCache) Populate() {
+	leaderboard, err := c.userScoreStore.GetLeaderboard(models.GetLeaderboardParams{})
+
+	if err != nil {
+		log.Fatalf("Failed to get leaderboard on populate redis cache: %s", err)
+		return
+	}
+
+	for _, l := range leaderboard {
+		err := c.Insert(context.Background(), l)
+
+		if err != nil {
+			log.Fatalf("Failed to pre populate redis cache: %s", err)
+		}
+	}
 }
