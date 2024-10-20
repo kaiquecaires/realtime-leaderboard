@@ -16,6 +16,10 @@ func main() {
 		c.IndentedJSON(http.StatusOK, "API IS ON FIRE!")
 	})
 
+	// just for make the tests easier
+	// this should not be created here
+	messaging.CreateTopic()
+
 	conn := db.GetPostgresInstance()
 	userStore := db.NewPostgresUserStore(conn)
 	gameStore := db.NewPostgresGameStore(conn)
@@ -36,7 +40,8 @@ func main() {
 	authorized.POST("/user-score", userScoreHandler.HandleSendUserScore)
 	authorized.GET("/leaderboard", userScoreHandler.HandleGetLeaderboard)
 
-	leaderboardCache := db.NewRedisLeaderboardCache(db.GetRedisClient())
+	leaderboardCache := db.NewRedisLeaderboardCache(db.GetRedisClient(), userScoreStore)
+	leaderboardCache.Populate()
 	leaderboardConsumer := messaging.NewLeaderboardConsumer(userScoreStore, leaderboardCache, userStore)
 	go leaderboardConsumer.Consume("leaderboard_postgres_1", "leaderdoard_postgres")
 
