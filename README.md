@@ -23,12 +23,12 @@ go run cmd/main.go
 - [x] Middleware for authentication
 - [x] Improve the consumer logic by adding consumer groups and multiple workers
 - [x] Route to get leaderboard
+- [x] Implement Cache Warm-up on redis
 
 ## Todo
 - [ ] Handle with idempotency on user score
 - [ ] Draw the System Design
 - [ ] Implement redis as cache
-- [ ] Implement Lazy loading on redis
 - [ ] Handle with retries on save on redis
 
 ## Things to study
