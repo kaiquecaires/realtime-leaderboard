@@ -7,6 +7,7 @@ import (
 
 type GameStore interface {
 	Insert(models.CreateGameParams) (*models.Game, error)
+	Get() ([]models.Game, error)
 }
 
 type PostgresGameStore struct {
@@ -30,4 +31,25 @@ func (s *PostgresGameStore) Insert(params models.CreateGameParams) (*models.Game
 		Id:   gameId,
 		Name: params.Name,
 	}, nil
+}
+
+func (s *PostgresGameStore) Get() ([]models.Game, error) {
+	query := "SELECT * FROM games"
+	var games []models.Game
+	rows, err := s.conn.Query(query)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var game models.Game
+		err := rows.Scan(&game.Id, &game.Name)
+		if err != nil {
+			return nil, err
+		}
+		games = append(games, game)
+	}
+
+	return games, nil
 }
