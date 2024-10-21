@@ -38,3 +38,14 @@ func (h *GameHandler) CreateGameHandler(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, game)
 }
+
+func (h *GameHandler) GetGamesHandler(c *gin.Context) {
+	games, err := h.gameStore.Get()
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, games)
+}
