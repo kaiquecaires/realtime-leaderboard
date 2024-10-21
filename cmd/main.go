@@ -38,6 +38,7 @@ func main() {
 
 	authorized := route.Group("/", auth.AuthRequired)
 	authorized.POST("/game", createGameHandler.CreateGameHandler)
+	authorized.GET("/games", createGameHandler.GetGamesHandler)
 	authorized.POST("/user-score", userScoreHandler.HandleSendUserScore)
 	authorized.GET("/leaderboard", userScoreHandler.HandleGetLeaderboard)
 
