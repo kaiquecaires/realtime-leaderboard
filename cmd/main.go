@@ -26,11 +26,12 @@ func main() {
 	userScoreStore := db.NewPostgresUserScoreStore(conn)
 	producer := messaging.GetProducer()
 	userScorePublisher := messaging.NewKafkaUserScorePublisher(producer)
+	leaderboardCache := db.NewRedisLeaderboardCache(db.GetRedisClient(), userScoreStore)
 
 	signUpHandler := handlers.NewSignUpHandler(userStore)
 	createGameHandler := handlers.NewGameHandler(gameStore)
 	loginHandler := handlers.NewLoginHandler(userStore)
-	userScoreHandler := handlers.NewUserScoreHandler(userScorePublisher, userScoreStore)
+	userScoreHandler := handlers.NewUserScoreHandler(userScorePublisher, userScoreStore, leaderboardCache)
 
 	route.POST("/login", loginHandler.Handle)
 	route.POST("/signup", signUpHandler.Handle)
@@ -40,7 +41,6 @@ func main() {
 	authorized.POST("/user-score", userScoreHandler.HandleSendUserScore)
 	authorized.GET("/leaderboard", userScoreHandler.HandleGetLeaderboard)
 
-	leaderboardCache := db.NewRedisLeaderboardCache(db.GetRedisClient(), userScoreStore)
 	leaderboardCache.Populate()
 	leaderboardConsumer := messaging.NewLeaderboardConsumer(userScoreStore, leaderboardCache, userStore)
 	go leaderboardConsumer.Consume("leaderboard_postgres_1", "leaderdoard_postgres")

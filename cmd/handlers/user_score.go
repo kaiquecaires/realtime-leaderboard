@@ -4,6 +4,7 @@ import (
 	"kaiquecaires/real-time-leaderboard/cmd/db"
 	"kaiquecaires/real-time-leaderboard/cmd/messaging"
 	"kaiquecaires/real-time-leaderboard/cmd/models"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -12,10 +13,11 @@ import (
 type UserScoreHandler struct {
 	userScorePublisher messaging.UserScorePublisher
 	userScoreStore     db.UserScoreStore
+	leaderboardCache   db.LeaderboardCache
 }
 
-func NewUserScoreHandler(userScorePublisher messaging.UserScorePublisher, userScoreStore db.UserScoreStore) *UserScoreHandler {
-	return &UserScoreHandler{userScorePublisher: userScorePublisher, userScoreStore: userScoreStore}
+func NewUserScoreHandler(userScorePublisher messaging.UserScorePublisher, userScoreStore db.UserScoreStore, leaderboardCache db.LeaderboardCache) *UserScoreHandler {
+	return &UserScoreHandler{userScorePublisher: userScorePublisher, userScoreStore: userScoreStore, leaderboardCache: leaderboardCache}
 }
 
 func (h *UserScoreHandler) HandleSendUserScore(c *gin.Context) {
@@ -46,6 +48,18 @@ func (h *UserScoreHandler) HandleGetLeaderboard(c *gin.Context) {
 
 	if err := c.ShouldBindQuery(&getLeaderboardParams); err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return
+	}
+
+	cachedLeaderboard, err := h.leaderboardCache.Get(c.Request.Context())
+
+	if err != nil {
+		log.Println("Failed to get leaderboard  from cache!", err)
+	}
+
+	if cachedLeaderboard != nil && len(cachedLeaderboard) > 0 {
+		log.Println("got from cache!")
+		c.JSON(http.StatusOK, cachedLeaderboard)
 		return
 	}
 
