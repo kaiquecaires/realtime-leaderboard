@@ -54,7 +54,7 @@ REQUEST BODY:
 ```
 
 - GET /leaderboard
-RESPONSE Body:
+RESPONSE BODY:
 ```json
 [
 	{
@@ -64,6 +64,17 @@ RESPONSE Body:
 	{
 		"user_id:": "kaiquecaires",
 		"score": 295
+	}
+]
+```
+
+- GET /games
+RESPONSE BODY
+```json
+[
+	{
+		"id": 1,
+		"name": "mygame"
 	}
 ]
 ```
