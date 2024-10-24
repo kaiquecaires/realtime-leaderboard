@@ -79,23 +79,9 @@ RESPONSE BODY
 ]
 ```
 
-## Done
-- [x] User sign up
-- [x] Send User Score Data
-- [x] Postgresql User Score Consumer
-- [x] Create a game
-- [x] Replace Sarama for Confluent Kafka library
-- [x] Login route
-- [x] Middleware for JWT authentication
-- [x] Improve the consumer logic by adding consumer groups and multiple workers
-- [x] Route to get leaderboard
-- [x] Implement Cache Warm-up on redis
-- [x] Draw the System Design
-- [x] Implement redis as cache
-
 ## Todo
-- [ ] Handle with idempotency on user score
-- [ ] Handle with retries on save on redis
+- Handle with idempotency on user score
+- Handle with retries on save on redis
 
 # References
 https://medium.com/@mayilb77/design-a-real-time-leaderboard-system-for-millions-of-users-08b96b4b64ce
